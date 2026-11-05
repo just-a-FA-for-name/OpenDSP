@@ -1,0 +1,76 @@
+{
+  "format": "org.openeq.preset",
+  "version": 1,
+  "name": "平直 · 原声起点",
+  "preamp_db": 0,
+  "enabled": true,
+  "device_hint": "",
+  "output": {
+    "gain_db": 0,
+    "balance": 0,
+    "left_delay_ms": 0,
+    "right_delay_ms": 0,
+    "invert_left": false,
+    "invert_right": false,
+    "peak_protection": true,
+    "ceiling_db": -1
+  },
+  "filters": [
+    {
+      "type": "peak",
+      "frequency_hz": 60,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 150,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 400,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 1000,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 2500,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 6000,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 12000,
+      "gain_db": 0,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    }
+  ]
+}

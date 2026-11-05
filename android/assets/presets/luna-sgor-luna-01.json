@@ -1,0 +1,52 @@
+{
+  "format": "org.openeq.preset",
+  "version": 1,
+  "name": "SGOR LUNA · 低频轻收（试音）",
+  "preamp_db": 0,
+  "enabled": true,
+  "device_hint": "SGOR LUNA / ACMEE-Phantom Sound 4X; listening starting point, not measured correction",
+  "output": {
+    "gain_db": 0,
+    "balance": 0,
+    "left_delay_ms": 0,
+    "right_delay_ms": 0,
+    "invert_left": false,
+    "invert_right": false,
+    "peak_protection": true,
+    "ceiling_db": -1
+  },
+  "filters": [
+    {
+      "type": "peak",
+      "frequency_hz": 95,
+      "gain_db": -0.7,
+      "q": 0.95,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 165,
+      "gain_db": -0.7,
+      "q": 1.05,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 280,
+      "gain_db": -0.45,
+      "q": 1.05,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 420,
+      "gain_db": -0.3,
+      "q": 1.1,
+      "channel": "both",
+      "enabled": true
+    }
+  ]
+}

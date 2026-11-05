@@ -1,0 +1,36 @@
+{
+  "format": "org.openeq.preset",
+  "version": 1,
+  "name": "柔和 · 久听舒适",
+  "preamp_db": -4,
+  "enabled": true,
+  "device_hint": "",
+  "output": {
+    "gain_db": 0,
+    "balance": 0,
+    "left_delay_ms": 0,
+    "right_delay_ms": 0,
+    "invert_left": false,
+    "invert_right": false,
+    "peak_protection": true,
+    "ceiling_db": -1
+  },
+  "filters": [
+    {
+      "type": "peak",
+      "frequency_hz": 3500,
+      "gain_db": -1.5,
+      "q": 1,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "high_shelf",
+      "frequency_hz": 8000,
+      "gain_db": -1.5,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    }
+  ]
+}

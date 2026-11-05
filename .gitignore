@@ -1,0 +1,54 @@
+build/
+signing/
+*.local
+local.properties
+**/bin/
+**/obj/
+
+dist/
+evidence/
+
+# 构建产物与二进制走 Releases，不进源码仓库
+**/dist/
+.vs/
+*.user
+*.suo
+
+# 签名私钥与证书：严禁上传
+*.jks
+*.keystore
+*.pfx
+*.p12
+*.pem
+*.key
+
+# 宣传视频脚本：仅本地使用，不随开源仓库发布
+/宣传片文案.md
+**/PROMO-SCRIPT*
+
+# 内部交接文档：含真机序列号、局域网地址与内部决策，仅本地保留
+HANDOFF.md
+spec/HANDOFF-*
+spec/LOCAL_TRIAL*
+spec/LOCAL-TRIAL*
+
+# 第三方驱动 / 虚拟声卡安装包：不再分发
+tools/vac/
+tools/acmee-asio-install/
+
+# 编译产物与二进制：源码仓库只放源码
+**/*.exe
+**/*.msi
+**/*.pdb
+**/*.sys
+**/*.cat
+**/*.dll
+**/*.lib
+**/*.a
+**/*.so
+**/*.apk
+**/*.zip
+**/*.7z
+**/*.cab
+**/*.obj
+**/*.tlog

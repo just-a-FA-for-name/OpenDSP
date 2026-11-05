@@ -1,0 +1,400 @@
+{
+  "offline_dsp": "PASS",
+  "devices": [
+    {
+      "Id": "{0.0.0.00000000}.{03d681b1-3f2b-4c97-b99d-97fef044818c}",
+      "Name": "Line 1 (Virtual Audio Cable)",
+      "Transport": "虚拟"
+    },
+    {
+      "Id": "{0.0.0.00000000}.{29197fce-5df0-4531-95aa-a1fd7d3f277a}",
+      "Name": "Hi-Fi Cable Input (VB-Audio Hi-Fi Cable)",
+      "Transport": "虚拟"
+    },
+    {
+      "Id": "{0.0.0.00000000}.{36202d54-6945-4815-bedd-42f1315edf2d}",
+      "Name": "G52plus (NVIDIA High Definition Audio)",
+      "Transport": "系统"
+    },
+    {
+      "Id": "{0.0.0.00000000}.{4fb552c6-5a06-4b7a-af23-8113e9f3fb8c}",
+      "Name": "扬声器 (UU远程虚拟音频设备)",
+      "Transport": "虚拟"
+    },
+    {
+      "Id": "{0.0.0.00000000}.{ce26d051-1ded-4112-b96e-f0bf5e9991ae}",
+      "Name": "扬声器 (Tears DSP)",
+      "Transport": "USB"
+    },
+    {
+      "Id": "{0.0.0.00000000}.{e40c416b-76e1-4e8b-bac6-b81c25eb43fd}",
+      "Name": "扬声器 (Steam Streaming Microphone)",
+      "Transport": "虚拟"
+    },
+    {
+      "Id": "{0.0.0.00000000}.{fd38caa9-511d-4f9c-94b3-89e6eed8ebe9}",
+      "Name": "扬声器 (Steam Streaming Speakers)",
+      "Transport": "虚拟"
+    }
+  ],
+  "input": {
+    "Id": "{0.0.0.00000000}.{fd38caa9-511d-4f9c-94b3-89e6eed8ebe9}",
+    "Name": "扬声器 (Steam Streaming Speakers)",
+    "Transport": "虚拟"
+  },
+  "output": {
+    "Id": "{0.0.0.00000000}.{ce26d051-1ded-4112-b96e-f0bf5e9991ae}",
+    "Name": "扬声器 (Tears DSP)",
+    "Transport": "USB"
+  },
+  "default_before": "{0.0.0.00000000}.{ce26d051-1ded-4112-b96e-f0bf5e9991ae}",
+  "endpoints_before": [
+    {
+      "id": "{0.0.0.00000000}.{03d681b1-3f2b-4c97-b99d-97fef044818c}",
+      "name": "Line 1 (Virtual Audio Cable)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume, Mute",
+      "master_db": 0,
+      "master": 0.62962615,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{29197fce-5df0-4531-95aa-a1fd7d3f277a}",
+      "name": "Hi-Fi Cable Input (VB-Audio Hi-Fi Cable)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 384000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume",
+      "master_db": 0,
+      "master": 1,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{36202d54-6945-4815-bedd-42f1315edf2d}",
+      "name": "G52plus (NVIDIA High Definition Audio)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "Mute",
+      "master_db": 0,
+      "master": 1,
+      "mute": true,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{4fb552c6-5a06-4b7a-af23-8113e9f3fb8c}",
+      "name": "扬声器 (UU远程虚拟音频设备)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume, Mute",
+      "master_db": 0,
+      "master": 1,
+      "mute": true,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{ce26d051-1ded-4112-b96e-f0bf5e9991ae}",
+      "name": "扬声器 (Tears DSP)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 384000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume",
+      "master_db": -30,
+      "master": 0.12199798,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        },
+        {
+          "process": 56284,
+          "name": "",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{e40c416b-76e1-4e8b-bac6-b81c25eb43fd}",
+      "name": "扬声器 (Steam Streaming Microphone)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "0",
+      "master_db": 0,
+      "master": 1,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{fd38caa9-511d-4f9c-94b3-89e6eed8ebe9}",
+      "name": "扬声器 (Steam Streaming Speakers)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 192000Hz 2 channels 32 bit",
+      "hardware_volume": "0",
+      "master_db": -10.208666,
+      "master": 0.51,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        },
+        {
+          "process": 56284,
+          "name": "",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    }
+  ],
+  "endpoints_during": [
+    {
+      "id": "{0.0.0.00000000}.{03d681b1-3f2b-4c97-b99d-97fef044818c}",
+      "name": "Line 1 (Virtual Audio Cable)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume, Mute",
+      "master_db": 0,
+      "master": 0.62962615,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{29197fce-5df0-4531-95aa-a1fd7d3f277a}",
+      "name": "Hi-Fi Cable Input (VB-Audio Hi-Fi Cable)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 384000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume",
+      "master_db": 0,
+      "master": 1,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{36202d54-6945-4815-bedd-42f1315edf2d}",
+      "name": "G52plus (NVIDIA High Definition Audio)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "Mute",
+      "master_db": 0,
+      "master": 1,
+      "mute": true,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{4fb552c6-5a06-4b7a-af23-8113e9f3fb8c}",
+      "name": "扬声器 (UU远程虚拟音频设备)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume, Mute",
+      "master_db": 0,
+      "master": 1,
+      "mute": true,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{ce26d051-1ded-4112-b96e-f0bf5e9991ae}",
+      "name": "扬声器 (Tears DSP)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 384000Hz 2 channels 32 bit",
+      "hardware_volume": "Volume",
+      "master_db": -30,
+      "master": 0.12199798,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        },
+        {
+          "process": 56284,
+          "name": "",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        },
+        {
+          "process": 79000,
+          "name": "",
+          "state": "AudioSessionStateActive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{e40c416b-76e1-4e8b-bac6-b81c25eb43fd}",
+      "name": "扬声器 (Steam Streaming Microphone)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 48000Hz 2 channels 32 bit",
+      "hardware_volume": "0",
+      "master_db": 0,
+      "master": 1,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    },
+    {
+      "id": "{0.0.0.00000000}.{fd38caa9-511d-4f9c-94b3-89e6eed8ebe9}",
+      "name": "扬声器 (Steam Streaming Speakers)",
+      "mix": "WAVE_FORMAT_EXTENSIBLE IEEE_FLOAT 192000Hz 2 channels 32 bit",
+      "hardware_volume": "0",
+      "master_db": 0,
+      "master": 1,
+      "mute": false,
+      "sessions": [
+        {
+          "process": 0,
+          "name": "@%SystemRoot%\\System32\\AudioSrv.Dll,-202",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        },
+        {
+          "process": 56284,
+          "name": "",
+          "state": "AudioSessionStateInactive",
+          "volume": 1,
+          "mute": false
+        },
+        {
+          "process": 79000,
+          "name": "",
+          "state": "AudioSessionStateActive",
+          "volume": 1,
+          "mute": false
+        }
+      ]
+    }
+  ],
+  "format": "48,000 Hz · 24-bit PCM · 双声道 · WASAPI 独占 · 事件缓冲",
+  "capture_format": "32 bit IEEFloat: 192000Hz 2 channels",
+  "duration_seconds": 3,
+  "buffer_history": [
+    {
+      "second": 1,
+      "buffer_ms": 90.0052,
+      "clock_ppm": -0.5156997274121786,
+      "starved_reads": 3,
+      "overflows": 0
+    },
+    {
+      "second": 2,
+      "buffer_ms": 40,
+      "clock_ppm": 0.6427167855636594,
+      "starved_reads": 3,
+      "overflows": 0
+    },
+    {
+      "second": 3,
+      "buffer_ms": 89.9947,
+      "clock_ppm": 2.4354133010309718,
+      "starved_reads": 4,
+      "overflows": 0
+    }
+  ],
+  "independent_tone_processes": [
+    76100,
+    77092
+  ],
+  "active_input_sessions": 3,
+  "captured_bytes": 6067200,
+  "processed_frames": 188160,
+  "energy_before": 0.6111405407685262,
+  "energy_after": 0.0003249023661118736,
+  "peak_before": 0.0030199370812624693,
+  "peak_after": 9.549879567190155E-05,
+  "buffer_ms": 89.9947,
+  "starved_reads": 4,
+  "overflow_events": 0,
+  "clipped_frames": 0,
+  "clock_correction_ppm": 2.4354133010309718,
+  "left_1000hz_measured_db": -41.98761408983063,
+  "right_3000hz_measured_db": -30.00000000000094,
+  "left_expected_db": -42,
+  "right_expected_db": -30,
+  "shared_contender_blocked": true,
+  "contender_hresult": "8889000A",
+  "default_after": "{0.0.0.00000000}.{ce26d051-1ded-4112-b96e-f0bf5e9991ae}",
+  "shared_reopened_after_stop": true,
+  "result": "PASS"
+}

@@ -1,0 +1,1 @@
+Start-Process -Wait -WindowStyle Hidden 'D:\AI workspace\OpenEQ\dist\OpenDSP-Windows-0.4-rc18\OpenDSP.exe' -ArgumentList '--device-probe','{0.0.0.00000000}.{3b6e28f1-6f65-46b9-bb0c-96db8f8d06a4}','D:\AI workspace\OpenEQ\evidence\nk1-probe.json'

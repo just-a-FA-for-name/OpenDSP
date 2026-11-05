@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup>
+  <OutputType>WinExe</OutputType><TargetFramework>net8.0-windows</TargetFramework>
+  <UseWindowsForms>true</UseWindowsForms><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+  <UseWPF>true</UseWPF><StartupObject>OpenEQ.Program</StartupObject>
+  <ApplicationManifest>app.manifest</ApplicationManifest>
+  <AssemblyName>OpenDSP</AssemblyName><ApplicationIcon>Assets\opendsp.ico</ApplicationIcon><Version>0.4.0</Version><Authors>Fa</Authors><Description>OpenDSP — 开源 HiFi DSP 套件，作者 Fa</Description>
+ </PropertyGroup>
+ <ItemGroup><PackageReference Include="NAudio" Version="2.2.1" /></ItemGroup>
+ <ItemGroup>
+  <EmbeddedResource Include="Assets/Targets/*.csv;Assets/Targets/catalog.json" LogicalName="OpenDSP.Targets.%(Filename)%(Extension)" />
+  <Content Include="Assets/Targets/LICENSE-AutoEq.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+ </ItemGroup>
+ <ItemGroup><Resource Include="Assets\fa-avatar.jpg" /><Resource Include="Assets\opendsp.ico" /><Content Include="../../build/apo/OpenEQ.Apo.dll" Link="OpenEQ.Apo.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" ExcludeFromSingleFile="true" /></ItemGroup>
+</Project>

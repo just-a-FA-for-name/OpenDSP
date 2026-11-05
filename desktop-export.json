@@ -1,0 +1,62 @@
+{
+  "format": "org.openeq.preset",
+  "version": 1,
+  "name": "PC 真机链路测试",
+  "preamp_db": -6,
+  "enabled": true,
+  "device_hint": "",
+  "output": {
+    "gain_db": -24,
+    "balance": 0,
+    "left_delay_ms": 0,
+    "right_delay_ms": 0,
+    "invert_left": false,
+    "invert_right": false,
+    "peak_protection": true,
+    "ceiling_db": -1,
+    "compressor": {
+      "enabled": false,
+      "threshold_db": -18,
+      "ratio": 4,
+      "attack_ms": 10,
+      "release_ms": 120,
+      "knee_db": 6,
+      "makeup_db": 0
+    },
+    "matrix": {
+      "ll": 1,
+      "lr": 0,
+      "rl": 0,
+      "rr": 1,
+      "width": 1
+    },
+    "dc_block": false,
+    "spatial": {
+      "enabled": false,
+      "mix": 1,
+      "mid_gain_db": 0,
+      "side_gain_db": 0,
+      "mid_filters": [],
+      "side_filters": [],
+      "low_width": 1,
+      "mid_width": 1,
+      "high_width": 1,
+      "low_crossover_hz": 180,
+      "high_crossover_hz": 3500,
+      "crossfeed": 0,
+      "crossfeed_hz": 700,
+      "crossfeed_delay_ms": 0.25,
+      "mono": false
+    }
+  },
+  "filters": [
+    {
+      "type": "peak",
+      "frequency_hz": 1000,
+      "gain_db": -12,
+      "q": 2,
+      "channel": "left",
+      "enabled": true
+    }
+  ]
+}

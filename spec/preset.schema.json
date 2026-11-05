@@ -1,0 +1,43 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "title":"OpenEQ portable preset v1",
+ "type":"object",
+ "required":["format","version","name","preamp_db","enabled","filters"],
+ "properties":{
+  "format":{"const":"org.openeq.preset"},
+  "version":{"const":1},
+  "name":{"type":"string","maxLength":100},
+  "preamp_db":{"type":"number","minimum":-60,"maximum":0},
+  "enabled":{"type":"boolean"},
+  "device_hint":{"type":"string"},
+  "output":{
+   "type":"object",
+   "required":["gain_db","balance","left_delay_ms","right_delay_ms","invert_left","invert_right","peak_protection","ceiling_db"],
+   "properties":{
+    "gain_db":{"type":"number","minimum":-60,"maximum":0},
+    "balance":{"type":"number","minimum":-1,"maximum":1},
+    "left_delay_ms":{"type":"number","minimum":0,"maximum":100},
+    "right_delay_ms":{"type":"number","minimum":0,"maximum":100},
+    "invert_left":{"type":"boolean"},
+    "invert_right":{"type":"boolean"},
+    "peak_protection":{"type":"boolean"},
+    "ceiling_db":{"type":"number","minimum":-12,"maximum":0}
+   }
+  },
+  "filters":{
+   "type":"array","maxItems":32,
+   "items":{
+    "type":"object",
+    "required":["type","frequency_hz","gain_db","q","channel","enabled"],
+    "properties":{
+     "type":{"enum":["peak","low_shelf","high_shelf","low_pass","high_pass","notch","all_pass"]},
+     "frequency_hz":{"type":"number","minimum":20,"maximum":20000},
+     "gain_db":{"type":"number","minimum":-24,"maximum":24},
+     "q":{"type":"number","minimum":0.1,"maximum":30},
+     "channel":{"enum":["both","left","right"]},
+     "enabled":{"type":"boolean"}
+    }
+   }
+  }
+ }
+}

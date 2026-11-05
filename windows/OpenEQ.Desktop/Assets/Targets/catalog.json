@@ -1,0 +1,156 @@
+{
+  "commit": "7ae0f56d53074872b028649617a22bbb4232feb7",
+  "license": "MIT; see LICENSE-AutoEq.txt",
+  "entries": [
+    {
+      "id": "harman-ie-2016",
+      "name": "Harman IE 2016",
+      "rig": "711",
+      "application": "in-ear",
+      "file": "harman-ie-2016.csv",
+      "original_file": "Harman in-ear 2016.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20in-ear%202016.csv",
+      "sha256": "03bc6b996b49b96e07c18bee408939aa7065341911b3c50a5e1f177023dba1ac"
+    },
+    {
+      "id": "harman-ie-2017-1",
+      "name": "Harman IE 2017-1",
+      "rig": "711",
+      "application": "in-ear",
+      "file": "harman-ie-2017-1.csv",
+      "original_file": "Harman in-ear 2017-1.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20in-ear%202017-1.csv",
+      "sha256": "cfc7ae17b18f1f9477a8ee380e151a2392d834bdbd31873b82012b6daaf49456"
+    },
+    {
+      "id": "harman-ie-2017-2",
+      "name": "Harman IE 2017-2",
+      "rig": "711",
+      "application": "in-ear",
+      "file": "harman-ie-2017-2.csv",
+      "original_file": "Harman in-ear 2017-2.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20in-ear%202017-2.csv",
+      "sha256": "6692b4a0e789d5e4b054c0fb5013eb77b702289cfe531f9bf4d98e00ae6aceec"
+    },
+    {
+      "id": "harman-ie-2019",
+      "name": "Harman IE 2019",
+      "rig": "711",
+      "application": "in-ear",
+      "file": "harman-ie-2019.csv",
+      "original_file": "Harman in-ear 2019.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20in-ear%202019.csv",
+      "sha256": "9f7acab72e1f7507889a13d4278390089d495ccedcfd3aa48df939a6c7491139"
+    },
+    {
+      "id": "harman-ie-2019-no-bass",
+      "name": "Harman IE 2019 · 无低架",
+      "rig": "711",
+      "application": "in-ear",
+      "file": "harman-ie-2019-no-bass.csv",
+      "original_file": "Harman in-ear 2019 without bass.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20in-ear%202019%20without%20bass.csv",
+      "sha256": "35bae4244bed9d2ec84ccdb4ea62a86b1f7d5f3b64568469f136bb4d0d435cb8"
+    },
+    {
+      "id": "harman-oe-2013",
+      "name": "Harman OE 2013",
+      "rig": "GRAS",
+      "application": "over-ear",
+      "file": "harman-oe-2013.csv",
+      "original_file": "Harman over-ear 2013.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20over-ear%202013.csv",
+      "sha256": "c20316a64760e6bc039007126c71be029d06a05dcfccae940cfb7b83101ec6f5"
+    },
+    {
+      "id": "harman-oe-2015",
+      "name": "Harman OE 2015",
+      "rig": "GRAS",
+      "application": "over-ear",
+      "file": "harman-oe-2015.csv",
+      "original_file": "Harman over-ear 2015.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20over-ear%202015.csv",
+      "sha256": "ac4e85fbc2b9b08d11782bbb59ce5e1af6bb55a0d9697ff91e7fe21bab79e3a1"
+    },
+    {
+      "id": "harman-oe-2018",
+      "name": "Harman OE 2018",
+      "rig": "GRAS",
+      "application": "over-ear",
+      "file": "harman-oe-2018.csv",
+      "original_file": "Harman over-ear 2018.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20over-ear%202018.csv",
+      "sha256": "12797010a78a693adeaa3e91f961e88cca3d25abc7883d144369915fc7c18f7c"
+    },
+    {
+      "id": "harman-oe-2018-no-bass",
+      "name": "Harman OE 2018 · 无低架",
+      "rig": "GRAS",
+      "application": "over-ear",
+      "file": "harman-oe-2018-no-bass.csv",
+      "original_file": "Harman over-ear 2018 without bass.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Harman%20over-ear%202018%20without%20bass.csv",
+      "sha256": "108d62ddb7e421db03f7b4a323ab9c6cbb931091aeaac3a7225218a57e00e1fd"
+    },
+    {
+      "id": "df-5128",
+      "name": "扩散场 DF · 5128",
+      "rig": "5128",
+      "application": "reference",
+      "file": "df-5128.csv",
+      "original_file": "Diffuse field 5128.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Diffuse%20field%205128.csv",
+      "sha256": "f906951f4ef7229fee579ca0bb574eec4aeea93f69e1e224ca4f94461836d361"
+    },
+    {
+      "id": "df-5128-tilt",
+      "name": "扩散场 5128 · −1dB/oct",
+      "rig": "5128",
+      "application": "reference",
+      "file": "df-5128-tilt.csv",
+      "original_file": "Diffuse field 5128 -1dB per octave.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Diffuse%20field%205128%20-1dB%20per%20octave.csv",
+      "sha256": "4d19b0c3e751ccbecdd959f3b4171af7681b7abc8889f62550e285480695000c"
+    },
+    {
+      "id": "df-gras",
+      "name": "扩散场 DF · GRAS KEMAR",
+      "rig": "GRAS-KEMAR",
+      "application": "reference",
+      "file": "df-gras.csv",
+      "original_file": "Diffuse field GRAS KEMAR.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Diffuse%20field%20GRAS%20KEMAR.csv",
+      "sha256": "96b0ea7df98adb2024b1261d131360a74825f75e53fb664644a381ffb55ce426"
+    },
+    {
+      "id": "df-iso",
+      "name": "扩散场 · ISO 11904-1",
+      "rig": "ISO11904-1",
+      "application": "reference",
+      "file": "df-iso.csv",
+      "original_file": "Diffuse field ISO 11904-1.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/Diffuse%20field%20ISO%2011904-1.csv",
+      "sha256": "dbcde695c7c04dc67512dea78651f59e89d1b9a12fbb999466dd35aeb7815a53"
+    },
+    {
+      "id": "jm1-treble",
+      "name": "JM-1 · Harman高频基础版",
+      "rig": "5128",
+      "application": "reference",
+      "file": "jm1-treble.csv",
+      "original_file": "JM-1 with Harman treble filter.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/JM-1%20with%20Harman%20treble%20filter.csv",
+      "sha256": "53bbc9769511020afb7950125c9468b4ff57f9cef60faef9b87d3aa3693de419"
+    },
+    {
+      "id": "autoeq-ie",
+      "name": "AutoEq IE 基础目标",
+      "rig": "711",
+      "application": "in-ear",
+      "file": "autoeq-ie.csv",
+      "original_file": "AutoEq in-ear.csv",
+      "source": "https://github.com/jaakkopasanen/AutoEq/blob/7ae0f56d53074872b028649617a22bbb4232feb7/targets/AutoEq%20in-ear.csv",
+      "sha256": "92c72c6bfc3ce49e097495fc896031236b7b8239c7bc345a2355fb4b2849abf8"
+    }
+  ]
+}

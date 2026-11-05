@@ -1,0 +1,92 @@
+{
+  "format": "org.openeq.preset",
+  "version": 1,
+  "name": "SGOR LUNA · 两端收敛（试音）",
+  "preamp_db": 0,
+  "enabled": true,
+  "device_hint": "SGOR LUNA / ACMEE-Phantom Sound 4X; listening starting point, not measured correction",
+  "output": {
+    "gain_db": 0,
+    "balance": 0,
+    "left_delay_ms": 0,
+    "right_delay_ms": 0,
+    "invert_left": false,
+    "invert_right": false,
+    "peak_protection": true,
+    "ceiling_db": -1
+  },
+  "filters": [
+    {
+      "type": "peak",
+      "frequency_hz": 95,
+      "gain_db": -0.8,
+      "q": 0.95,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 180,
+      "gain_db": -0.7,
+      "q": 1.05,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 340,
+      "gain_db": -0.3,
+      "q": 1.05,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 3950,
+      "gain_db": -0.6,
+      "q": 1.4,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 5250,
+      "gain_db": -1,
+      "q": 1.6,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 6650,
+      "gain_db": -1.6,
+      "q": 1.75,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 8350,
+      "gain_db": -1.2,
+      "q": 1.7,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "peak",
+      "frequency_hz": 10200,
+      "gain_db": -0.5,
+      "q": 1.4,
+      "channel": "both",
+      "enabled": true
+    },
+    {
+      "type": "high_shelf",
+      "frequency_hz": 12500,
+      "gain_db": -0.25,
+      "q": 0.707,
+      "channel": "both",
+      "enabled": true
+    }
+  ]
+}
