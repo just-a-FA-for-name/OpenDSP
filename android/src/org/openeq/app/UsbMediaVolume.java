@@ -13,8 +13,8 @@ final class UsbMediaVolume implements AutoCloseable {
  UsbMediaVolume(UsbAudioService service){
   session=new MediaSession(service,"OpenDSP-USB-volume");
   provider=new VolumeProvider(VolumeProvider.VOLUME_CONTROL_ABSOLUTE,100,UsbVolume.state.muted?0:UsbVolume.state.percent){
-   public void onAdjustVolume(int direction){if(direction!=0)UsbVolume.adjust(service,direction>0?UsbVolume.STEP:-UsbVolume.STEP);}
-   public void onSetVolumeTo(int value){UsbVolume.set(service,value,false);}
+   public void onAdjustVolume(int direction){if(direction!=0){SystemVolumeGuard.noteRemoteKey();UsbVolume.adjust(service,direction>0?UsbVolume.STEP:-UsbVolume.STEP);}}
+   public void onSetVolumeTo(int value){SystemVolumeGuard.noteRemoteKey();UsbVolume.set(service,value,false);}
   };
   session.setCallback(new MediaSession.Callback(){public boolean onMediaButtonEvent(Intent intent){return false;}},new Handler(Looper.getMainLooper()));
   /* Keep this session a first-class media session. Some OEM ROMs ignore a

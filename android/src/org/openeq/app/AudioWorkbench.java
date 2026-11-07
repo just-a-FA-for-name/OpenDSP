@@ -43,7 +43,7 @@ final class AudioWorkbench {
   guardSwitch.setEnabled(!usb.activeOrPending());
   guardSwitch.setOnCheckedChangeListener((btn,checked)->a.getSharedPreferences(SystemVolumeGuard.PREF,0).edit().putBoolean("enabled",checked).apply());
   summary.addView(guardSwitch);
-  summary.addView(a.text("独立于EQ前级，PCM音量20ms平滑变化。音量键与通知按钮每档1%；20%以下每档约2dB，低阻高敏耳机可从1%起步，100%保持原最大输出。USB独占期间系统输出流自动锁为0并原样恢复，音量键不再改动系统音量；前台、通知栏与后台按键统一调USB主音量。DSD直送请用DAC硬件音量。",11,a.MUTED));
+  summary.addView(a.text("独立于EQ前级，PCM音量20ms平滑变化。音量键与通知按钮每档1%；20%以下每档约2dB，低阻高敏耳机可从1%起步，100%保持原最大输出。USB独占期间系统媒体流自动静音并原样恢复，不动铃声与通知、不会切震动模式；前台、通知栏与后台音量键统一调USB主音量，加减都生效。DSD直送请用DAC硬件音量。",11,a.MUTED));
   LinearLayout route=a.card();route.addView(a.text("输入 / 输出",17,a.INK));
   sourcePick=usb.spinner(route,"音源应用",CaptureSources.LABELS);sourcePick.setSelection(CaptureSources.index(usb.sourcePackage));selectors.add(sourcePick);
   sourcePick.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){public void onNothingSelected(android.widget.AdapterView<?> p){}public void onItemSelected(android.widget.AdapterView<?> p,View v,int position,long id){if(!usb.activeOrPending()){usb.sourcePackage=CaptureSources.PACKAGES[position];usb.saveWorkbench();refresh();}}});
@@ -62,7 +62,7 @@ final class AudioWorkbench {
   outputMeter=new ProgressBar(a,null,android.R.attr.progressBarStyleHorizontal);outputMeter.setMax(600);levels.addView(outputMeter);counters=a.text("",12,a.MUTED);levels.addView(counters);
   LinearLayout preset=a.card();preset.addView(a.text("当前调音",17,a.INK));preset.addView(a.text(a.preset.name+" · "+a.preset.bands.size()+"段 · 前级 "+a.preset.preamp+"dB",13,a.MUTED));
   a.rowButtons(preset,"均衡 / 输出处理",()->{a.page="均衡";a.render();},"预设 / A-B",()->{a.page="预设";a.render();});
-  LinearLayout notes=a.card();notes.addView(a.text("使用说明",17,a.INK));notes.addView(a.text("1. 选音源和DAC，点“开始处理”，完成系统授权。\n2. 切到网易云或B站播放，回来看输入电平与USB计数。\n3. EQ等参数实时生效，切到后台也可继续处理。\nUSB独占期间，媒体/通知/系统/铃声音量自动锁0，退出后按原值恢复，避免DAC与扬声器同时出声；闹钟不受影响。",12,a.MUTED));
+  LinearLayout notes=a.card();notes.addView(a.text("使用说明",17,a.INK));notes.addView(a.text("1. 选音源和DAC，点“开始处理”，完成系统授权。\n2. 切到网易云或B站播放，回来看输入电平与USB计数。\n3. EQ等参数实时生效，切到后台也可继续处理。\nUSB独占期间仅媒体流被静音（保留非零音量便于音量键加减），退出后按原值恢复并取消静音，避免DAC与扬声器同时出声；铃声、通知与闹钟不受影响。",12,a.MUTED));
   backgroundLabel=a.text(BackgroundStatus.describe(a),12,a.MUTED);notes.addView(backgroundLabel);
   notes.addView(a.button("后台 / 电池优化设置",()->{try{BackgroundStatus.requestBatteryExemption(a);}catch(Exception error){a.error(error);}}));
   notes.addView(a.text("系统授权弹窗可能写“屏幕共享”；OpenDSP只建立音频捕获通道，不创建屏幕图像、不读取播放记录、不保存录音。",11,a.MUTED));
@@ -81,7 +81,7 @@ final class AudioWorkbench {
   String raw=UsbAudioService.diagnostics;if(!raw.equals(lastDiagnostics)){try{parsed=new JSONObject(raw);}catch(Exception e){parsed=new JSONObject();}lastDiagnostics=raw;}JSONObject status=parsed;
   UsbAudioService svc=UsbAudioService.instance;boolean locked=svc!=null&&svc.systemGuard!=null&&svc.systemGuard.active();
   boolean guardEnabled=a.getSharedPreferences(SystemVolumeGuard.PREF,0).getBoolean("enabled",true);
-  text(guardLabel,!guardEnabled?"系统输出：屏蔽已关闭（可在下方开关打开）":locked?"系统输出：已锁 0 · 不会从扬声器出声 · 退出后自动恢复":UsbAudioService.processing?"系统输出：正在接管…":"系统输出：正常（未处理时不影响手机音量）");
+  text(guardLabel,!guardEnabled?"系统输出：屏蔽已关闭（可在下方开关打开）":locked?"系统输出：媒体流已静音 · 不会从扬声器出声 · 退出后自动恢复":UsbAudioService.processing?"系统输出：正在接管…":"系统输出：正常（未处理时不影响手机音量）");
   if(guardSwitch!=null)guardSwitch.setEnabled(!busy);
   if(usb.pending){text(state,"等待系统授权");text(detail,usb.message);}else if(!UsbAudioService.busy()&&!usb.message.isEmpty()){text(state,"待机");text(detail,usb.message);}else{text(state,title(phase));text(detail,display);}
   boolean processing="processing".equals(phase)&&UsbAudioService.busy();state.setTextColor(processing?Color.rgb(22,141,122):"error".equals(phase)?Color.rgb(184,83,62):a.INK);

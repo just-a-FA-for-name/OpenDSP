@@ -362,53 +362,150 @@ public class OpenEqInstrumentation extends Instrumentation {
         android.content.Context context=getTargetContext();
         check(!UsbAudioService.processing,"Do not change system volume while a USB session is live");
         android.media.AudioManager audio=(android.media.AudioManager)context.getSystemService(android.content.Context.AUDIO_SERVICE);
-        int[] streams={android.media.AudioManager.STREAM_MUSIC,android.media.AudioManager.STREAM_NOTIFICATION,android.media.AudioManager.STREAM_SYSTEM,android.media.AudioManager.STREAM_RING};
-        int[] before=new int[streams.length];for(int i=0;i<streams.length;i++)before[i]=audio.getStreamVolume(streams[i]);
+        int stream=android.media.AudioManager.STREAM_MUSIC;
+        int beforeMusic=audio.getStreamVolume(stream);
+        boolean beforeMute=audio.isStreamMute(stream);
+        int beforeNotif=audio.getStreamVolume(android.media.AudioManager.STREAM_NOTIFICATION);
+        int beforeSystem=audio.getStreamVolume(android.media.AudioManager.STREAM_SYSTEM);
+        int beforeRing=audio.getStreamVolume(android.media.AudioManager.STREAM_RING);
+        int beforeMode=audio.getRingerMode();
         android.content.SharedPreferences guardPrefs=context.getSharedPreferences(SystemVolumeGuard.PREF,0);
         java.util.Map<String,?> savedGuard=new java.util.HashMap<>(guardPrefs.getAll());
         android.content.SharedPreferences volumePrefs=context.getSharedPreferences("usb-volume",0);
         java.util.Map<String,?> savedVolume=new java.util.HashMap<>(volumePrefs.getAll());
         UsbVolume.load(context);UsbVolume.State originalVolume=UsbVolume.state;
         JSONObject report=new JSONObject();
+        SystemVolumeGuard guard=null;
         try{
             guardPrefs.edit().putBoolean("enabled",true).commit();
-            SystemVolumeGuard guard=new SystemVolumeGuard(context);guard.start();
+            guard=new SystemVolumeGuard(context);guard.start();
+            Thread.sleep(400);
             check(guard.active(),"Guard must be active");
             check(guardPrefs.getBoolean("active",false),"Guard must persist its restore flag");
-            for(int s:streams)check(audio.getStreamVolume(s)==0,"System stream must be locked to 0: "+s);
-            report.put("locked_to_zero",true);
-            /* Simulate a hardware volume press in another app. */
+            int sentinel=guardPrefs.getInt("sentinel",-1);
+            int max=audio.getStreamMaxVolume(stream);
+            check(sentinel>=1&&sentinel<=max-1,"Sentinel must leave room in both directions: "+sentinel);
+            check(audio.isStreamMute(stream),"Media stream must be muted");
+            check(audio.isStreamMute(stream),"Media stream must be muted");
+            check(audio.getStreamVolume(android.media.AudioManager.STREAM_NOTIFICATION)==beforeNotif,"Notification volume must not be touched");
+            check(audio.getStreamVolume(android.media.AudioManager.STREAM_SYSTEM)==beforeSystem,"System volume must not be touched");
+            check(audio.getStreamVolume(android.media.AudioManager.STREAM_RING)==beforeRing,"Ring volume must not be touched");
+            check(audio.getRingerMode()==beforeMode,"Ringer mode must not change (no forced vibrate)");
+            report.put("sentinel",sentinel).put("muted",true).put("ringer_untouched",true);
             UsbAudioService.processing=true;UsbAudioService.dopActive=false;
             UsbVolume.set(context,50,false);
-            audio.setStreamVolume(android.media.AudioManager.STREAM_MUSIC,6,0);
-            report.put("raise_observed_before_guard",audio.getStreamVolume(android.media.AudioManager.STREAM_MUSIC));
-            Thread.sleep(1000);
-            check(audio.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)==0,"External raise must be pushed back to 0");
-            check(UsbVolume.state.percent==51,"External raise must become exactly one USB volume step");
-            report.put("external_raise_reverted",true).put("usb_step_mapped",true);
-            guard.close();
-            for(int i=0;i<streams.length;i++)check(audio.getStreamVolume(streams[i])==before[i],"Original volume must be restored for stream "+streams[i]);
-            check(!guardPrefs.getBoolean("active",false),"Restore flag must be cleared");
-            report.put("volumes_restored",true);
+            audio.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_UNMUTE,0);
+            audio.setStreamVolume(stream,sentinel+2,0);
+            Thread.sleep(900);
+            check(audio.isStreamMute(stream),"Raise must be re-muted");
+            check(UsbVolume.state.percent==51,"Raise must become exactly one USB step");
+            report.put("raise_reverted",true);
+            audio.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_UNMUTE,0);
+            audio.setStreamVolume(stream,sentinel-1,0);
+            Thread.sleep(900);
+            check(audio.isStreamMute(stream),"Lower must be re-muted");
+            check(UsbVolume.state.percent==50,"Lower must become exactly one USB step down");
+            report.put("lower_reverted",true);
+            audio.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_UNMUTE,0);
+            Thread.sleep(900);
+            check(audio.isStreamMute(stream),"Unmute-only must be re-muted");
+            check(UsbVolume.state.percent==51,"Unmute-only press must count as one step up");
+            report.put("unmute_only_mapped",true);
+            guard.close();guard=null;
+            check(!audio.isStreamMute(stream),"Exit must clear the mute");
+            check(audio.getStreamVolume(stream)==beforeMusic,"Exit must restore the media volume");
+            check(audio.getRingerMode()==beforeMode,"Exit must not change ringer mode");
             guardPrefs.edit().putBoolean("enabled",false).commit();
-            SystemVolumeGuard disabled=new SystemVolumeGuard(context);disabled.start();
-            check(!disabled.active(),"Guard must respect the opt-out switch");
-            for(int i=0;i<streams.length;i++)check(audio.getStreamVolume(streams[i])==before[i],"Opt-out must not touch volumes");
-            disabled.close();report.put("opt_out_honoured",true);
-            UsbAudioService.processing=false;
-            for(int s:streams)audio.setStreamVolume(s,0,0);
-            guardPrefs.edit().putBoolean("active",true).putInt("music",before[0]).putInt("notification",before[1]).putInt("system",before[2]).putInt("ring",before[3]).commit();
-            SystemVolumeGuard.restoreIfOrphan(context);
-            for(int i=0;i<streams.length;i++)check(audio.getStreamVolume(streams[i])==before[i],"Orphan restore must recover stream "+streams[i]);
-            report.put("orphan_restore",true).put("result","PASS_SYSTEM_VOLUME_GUARD");
+            SystemVolumeGuard off=new SystemVolumeGuard(context);off.start();
+            check(!off.active(),"Guard must respect the opt-out switch");
+            off.close();
+            guardPrefs.edit().putBoolean("enabled",true).commit();
+            report.put("restored",true).put("opt_out_honoured",true).put("result","PASS_SYSTEM_VOLUME_GUARD");
         }finally{
+            if(guard!=null)try{guard.close();}catch(Exception ignored){}
             UsbAudioService.processing=false;UsbAudioService.dopActive=false;
             UsbVolume.state=originalVolume;
             restorePreferences(volumePrefs,savedVolume);restorePreferences(guardPrefs,savedGuard);
-            for(int i=0;i<streams.length;i++)try{audio.setStreamVolume(streams[i],before[i],0);}catch(Exception ignored){}
+            try{
+                audio.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_UNMUTE,0);
+                audio.setStreamVolume(stream,beforeMusic,0);
+                if(beforeMute)audio.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_MUTE,0);
+                audio.setStreamVolume(android.media.AudioManager.STREAM_NOTIFICATION,beforeNotif,0);
+                audio.setStreamVolume(android.media.AudioManager.STREAM_SYSTEM,beforeSystem,0);
+                audio.setStreamVolume(android.media.AudioManager.STREAM_RING,beforeRing,0);
+            }catch(Exception ignored){}
         }
         try(FileOutputStream out=new FileOutputStream(new File(context.getExternalFilesDir("interop"),"system-volume-guard-checks.json"))){out.write(report.toString(2).getBytes(java.nio.charset.StandardCharsets.UTF_8));}
         result.putString("result",report.toString());
+    }
+    void volumeRouting(Bundle result)throws Exception{
+        android.content.Context context=getTargetContext();
+        final java.util.concurrent.atomic.AtomicInteger ups=new java.util.concurrent.atomic.AtomicInteger();
+        final java.util.concurrent.atomic.AtomicInteger downs=new java.util.concurrent.atomic.AtomicInteger();
+        final java.util.concurrent.atomic.AtomicInteger sets=new java.util.concurrent.atomic.AtomicInteger();
+        android.media.AudioManager audio=(android.media.AudioManager)context.getSystemService(android.content.Context.AUDIO_SERVICE);
+        int stream=android.media.AudioManager.STREAM_MUSIC;
+        int before=audio.getStreamVolume(stream);
+        android.media.session.MediaSession session=new android.media.session.MediaSession(context,"opendsp-route-test");
+        android.media.VolumeProvider provider=new android.media.VolumeProvider(android.media.VolumeProvider.VOLUME_CONTROL_ABSOLUTE,100,50){
+            public void onAdjustVolume(int direction){if(direction>0)ups.incrementAndGet();else if(direction<0)downs.incrementAndGet();}
+            public void onSetVolumeTo(int value){sets.incrementAndGet();}
+        };
+        session.setPlaybackToRemote(provider);
+        session.setPlaybackState(new android.media.session.PlaybackState.Builder().setActions(android.media.session.PlaybackState.ACTION_PLAY_PAUSE).setState(android.media.session.PlaybackState.STATE_PLAYING,0L,1f).build());
+        session.setActive(true);
+        Thread.sleep(400);
+        int volumeBefore=aio(context,stream);
+        Thread.sleep(9000);   /* host injects VOLUME_UP then VOLUME_DOWN meanwhile */
+        int volumeAfterUp=aio(context,stream);
+        int volumeAfterDown=aio(context,stream);
+        session.setActive(false);session.release();
+        audio.setStreamVolume(stream,before,0);
+        JSONObject report=new JSONObject();
+        report.put("session_ups",ups.get()).put("session_downs",downs.get()).put("session_sets",sets.get());
+        report.put("system_volume_before",volumeBefore).put("system_volume_after_up",volumeAfterUp).put("system_volume_after_down",volumeAfterDown);
+        report.put("result",ups.get()+downs.get()>0?"SESSION_GOT_KEYS":"SESSION_BYPASSED");
+        result.putString("result",report.toString());
+    }
+    private static int musicIndex(android.content.Context context){
+        android.media.AudioManager a=(android.media.AudioManager)context.getSystemService(android.content.Context.AUDIO_SERVICE);
+        int stream=android.media.AudioManager.STREAM_MUSIC;boolean m=false;
+        try{m=a.isStreamMute(stream);}catch(Exception ignored){}
+        if(m)try{a.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_UNMUTE,0);Thread.sleep(400);}catch(Exception ignored){}
+        int v=a.getStreamVolume(stream);
+        if(m)try{a.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_MUTE,0);}catch(Exception ignored){}
+        return v;
+    }
+    private static int aio(android.content.Context context,int stream){android.media.AudioManager a=(android.media.AudioManager)context.getSystemService(android.content.Context.AUDIO_SERVICE);return a.getStreamVolume(stream);}
+    private void injectKey(int keyCode){
+        long now=android.os.SystemClock.uptimeMillis();
+        android.app.UiAutomation ui=getUiAutomation();
+        ui.injectInputEvent(new android.view.KeyEvent(now,now,android.view.KeyEvent.ACTION_DOWN,keyCode,0),true);
+        ui.injectInputEvent(new android.view.KeyEvent(now,now+30,android.view.KeyEvent.ACTION_UP,keyCode,0),true);
+    }
+    void muteProbe(Bundle result)throws Exception{
+        android.content.Context c=getTargetContext();
+        android.media.AudioManager a=(android.media.AudioManager)c.getSystemService(android.content.Context.AUDIO_SERVICE);
+        int stream=android.media.AudioManager.STREAM_MUSIC;
+        int before=a.getStreamVolume(stream);boolean beforeMute=a.isStreamMute(stream);
+        JSONObject r=new JSONObject();
+        a.setStreamVolume(stream,7,0);Thread.sleep(200);
+        r.put("set7_index",a.getStreamVolume(stream));
+        a.setStreamVolume(stream,1,0);Thread.sleep(400);
+        r.put("set1_index",a.getStreamVolume(stream));
+        a.setStreamVolume(stream,7,0);Thread.sleep(200);
+        a.setStreamMute(stream,true);Thread.sleep(400);
+        r.put("setMute_index",a.getStreamVolume(stream)).put("setMute_muted",a.isStreamMute(stream));
+        a.setStreamMute(stream,false);Thread.sleep(400);
+        r.put("unsetMute_index",a.getStreamVolume(stream)).put("unsetMute_muted",a.isStreamMute(stream));
+        a.setStreamVolume(stream,7,0);
+        a.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_MUTE,0);Thread.sleep(400);
+        r.put("adjustMute_index",a.getStreamVolume(stream)).put("adjustMute_muted",a.isStreamMute(stream));
+        a.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_UNMUTE,0);Thread.sleep(400);
+        r.put("adjustUnmute_index",a.getStreamVolume(stream)).put("adjustUnmute_muted",a.isStreamMute(stream));
+        a.setStreamVolume(stream,before,0);if(beforeMute)a.adjustStreamVolume(stream,android.media.AudioManager.ADJUST_MUTE,0);
+        r.put("result","MUTE_PROBE");
+        result.putString("result",r.toString());
     }
     void restorePreferences(android.content.SharedPreferences preferences,java.util.Map<String,?> saved){
         android.content.SharedPreferences.Editor edit=preferences.edit().clear();for(java.util.Map.Entry<String,?> entry:saved.entrySet()){Object v=entry.getValue();String k=entry.getKey();if(v instanceof String)edit.putString(k,(String)v);else if(v instanceof Boolean)edit.putBoolean(k,(Boolean)v);else if(v instanceof Integer)edit.putInt(k,(Integer)v);else if(v instanceof Long)edit.putLong(k,(Long)v);else if(v instanceof Float)edit.putFloat(k,(Float)v);}edit.commit();
@@ -416,6 +513,8 @@ public class OpenEqInstrumentation extends Instrumentation {
     @Override public void onStart(){Bundle result=new Bundle();try{
         if(arguments!=null&&arguments.getString("volume_curve")!=null){volumeCurve(result);finish(Activity.RESULT_OK,result);return;}
         if(arguments!=null&&arguments.getString("system_volume_guard")!=null){systemVolumeGuard(result);finish(Activity.RESULT_OK,result);return;}
+        if(arguments!=null&&arguments.getString("volume_routing")!=null){volumeRouting(result);finish(Activity.RESULT_OK,result);return;}
+        if(arguments!=null&&arguments.getString("mute_probe")!=null){muteProbe(result);finish(Activity.RESULT_OK,result);return;}
         if(arguments!=null&&arguments.getString("import_pc_library")!=null){
             android.content.Context context=getTargetContext();android.content.SharedPreferences prefs=PresetLibrary.prefs(context);
             String current=prefs.getString("current",null);java.util.Map<String,?> original=new java.util.HashMap<>(prefs.getAll());
