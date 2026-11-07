@@ -357,11 +357,65 @@ public class OpenEqInstrumentation extends Instrumentation {
         try(FileOutputStream out=new FileOutputStream(new File(context.getExternalFilesDir("interop"),"volume-curve-checks.json"))){out.write(report.toString(2).getBytes(java.nio.charset.StandardCharsets.UTF_8));}
         result.putString("result",report.toString());
     }
+    /** Verifies the exclusive-USB system output lock without needing a DAC. */
+    void systemVolumeGuard(Bundle result)throws Exception{
+        android.content.Context context=getTargetContext();
+        check(!UsbAudioService.processing,"Do not change system volume while a USB session is live");
+        android.media.AudioManager audio=(android.media.AudioManager)context.getSystemService(android.content.Context.AUDIO_SERVICE);
+        int[] streams={android.media.AudioManager.STREAM_MUSIC,android.media.AudioManager.STREAM_NOTIFICATION,android.media.AudioManager.STREAM_SYSTEM,android.media.AudioManager.STREAM_RING};
+        int[] before=new int[streams.length];for(int i=0;i<streams.length;i++)before[i]=audio.getStreamVolume(streams[i]);
+        android.content.SharedPreferences guardPrefs=context.getSharedPreferences(SystemVolumeGuard.PREF,0);
+        java.util.Map<String,?> savedGuard=new java.util.HashMap<>(guardPrefs.getAll());
+        android.content.SharedPreferences volumePrefs=context.getSharedPreferences("usb-volume",0);
+        java.util.Map<String,?> savedVolume=new java.util.HashMap<>(volumePrefs.getAll());
+        UsbVolume.load(context);UsbVolume.State originalVolume=UsbVolume.state;
+        JSONObject report=new JSONObject();
+        try{
+            guardPrefs.edit().putBoolean("enabled",true).commit();
+            SystemVolumeGuard guard=new SystemVolumeGuard(context);guard.start();
+            check(guard.active(),"Guard must be active");
+            check(guardPrefs.getBoolean("active",false),"Guard must persist its restore flag");
+            for(int s:streams)check(audio.getStreamVolume(s)==0,"System stream must be locked to 0: "+s);
+            report.put("locked_to_zero",true);
+            /* Simulate a hardware volume press in another app. */
+            UsbAudioService.processing=true;UsbAudioService.dopActive=false;
+            UsbVolume.set(context,50,false);
+            audio.setStreamVolume(android.media.AudioManager.STREAM_MUSIC,6,0);
+            report.put("raise_observed_before_guard",audio.getStreamVolume(android.media.AudioManager.STREAM_MUSIC));
+            Thread.sleep(1000);
+            check(audio.getStreamVolume(android.media.AudioManager.STREAM_MUSIC)==0,"External raise must be pushed back to 0");
+            check(UsbVolume.state.percent==51,"External raise must become exactly one USB volume step");
+            report.put("external_raise_reverted",true).put("usb_step_mapped",true);
+            guard.close();
+            for(int i=0;i<streams.length;i++)check(audio.getStreamVolume(streams[i])==before[i],"Original volume must be restored for stream "+streams[i]);
+            check(!guardPrefs.getBoolean("active",false),"Restore flag must be cleared");
+            report.put("volumes_restored",true);
+            guardPrefs.edit().putBoolean("enabled",false).commit();
+            SystemVolumeGuard disabled=new SystemVolumeGuard(context);disabled.start();
+            check(!disabled.active(),"Guard must respect the opt-out switch");
+            for(int i=0;i<streams.length;i++)check(audio.getStreamVolume(streams[i])==before[i],"Opt-out must not touch volumes");
+            disabled.close();report.put("opt_out_honoured",true);
+            UsbAudioService.processing=false;
+            for(int s:streams)audio.setStreamVolume(s,0,0);
+            guardPrefs.edit().putBoolean("active",true).putInt("music",before[0]).putInt("notification",before[1]).putInt("system",before[2]).putInt("ring",before[3]).commit();
+            SystemVolumeGuard.restoreIfOrphan(context);
+            for(int i=0;i<streams.length;i++)check(audio.getStreamVolume(streams[i])==before[i],"Orphan restore must recover stream "+streams[i]);
+            report.put("orphan_restore",true).put("result","PASS_SYSTEM_VOLUME_GUARD");
+        }finally{
+            UsbAudioService.processing=false;UsbAudioService.dopActive=false;
+            UsbVolume.state=originalVolume;
+            restorePreferences(volumePrefs,savedVolume);restorePreferences(guardPrefs,savedGuard);
+            for(int i=0;i<streams.length;i++)try{audio.setStreamVolume(streams[i],before[i],0);}catch(Exception ignored){}
+        }
+        try(FileOutputStream out=new FileOutputStream(new File(context.getExternalFilesDir("interop"),"system-volume-guard-checks.json"))){out.write(report.toString(2).getBytes(java.nio.charset.StandardCharsets.UTF_8));}
+        result.putString("result",report.toString());
+    }
     void restorePreferences(android.content.SharedPreferences preferences,java.util.Map<String,?> saved){
         android.content.SharedPreferences.Editor edit=preferences.edit().clear();for(java.util.Map.Entry<String,?> entry:saved.entrySet()){Object v=entry.getValue();String k=entry.getKey();if(v instanceof String)edit.putString(k,(String)v);else if(v instanceof Boolean)edit.putBoolean(k,(Boolean)v);else if(v instanceof Integer)edit.putInt(k,(Integer)v);else if(v instanceof Long)edit.putLong(k,(Long)v);else if(v instanceof Float)edit.putFloat(k,(Float)v);}edit.commit();
     }
     @Override public void onStart(){Bundle result=new Bundle();try{
         if(arguments!=null&&arguments.getString("volume_curve")!=null){volumeCurve(result);finish(Activity.RESULT_OK,result);return;}
+        if(arguments!=null&&arguments.getString("system_volume_guard")!=null){systemVolumeGuard(result);finish(Activity.RESULT_OK,result);return;}
         if(arguments!=null&&arguments.getString("import_pc_library")!=null){
             android.content.Context context=getTargetContext();android.content.SharedPreferences prefs=PresetLibrary.prefs(context);
             String current=prefs.getString("current",null);java.util.Map<String,?> original=new java.util.HashMap<>(prefs.getAll());

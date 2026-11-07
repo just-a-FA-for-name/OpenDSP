@@ -22,6 +22,7 @@ public final class UsbAudioService extends Service {
  static volatile int actualRate=384000;static volatile Preset latest;
  static volatile boolean dopActive;static volatile String stopReason="not_started";
  UsbMediaVolume mediaVolume;
+ SystemVolumeGuard systemGuard;
  final AtomicBoolean running=new AtomicBoolean();volatile long nativeHandle;volatile Thread worker;
  final AtomicBoolean stopCleanupStarted=new AtomicBoolean();
  volatile long stopRequestedAtNs;
@@ -39,13 +40,13 @@ public final class UsbAudioService extends Service {
  static boolean busy(){UsbAudioService service=instance;return service!=null&&service.worker!=null;}
  public static void stop(Context context){UsbAudioService s=instance;if(s!=null){stopReason="user_stop";s.stopPlayback();}}
  public IBinder onBind(Intent intent){return null;}
- public void onCreate(){super.onCreate();instance=this;UsbVolume.load(this);NotificationManager manager=getSystemService(NotificationManager.class);manager.createNotificationChannel(new NotificationChannel("usb-audio","USB音频",NotificationManager.IMPORTANCE_LOW));IntentFilter f=new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);if(Build.VERSION.SDK_INT>=33)registerReceiver(detached,f,Context.RECEIVER_NOT_EXPORTED);else registerReceiver(detached,f);}
+ public void onCreate(){super.onCreate();instance=this;UsbVolume.load(this);SystemVolumeGuard.restoreIfOrphan(this);NotificationManager manager=getSystemService(NotificationManager.class);manager.createNotificationChannel(new NotificationChannel("usb-audio","USB音频",NotificationManager.IMPORTANCE_LOW));IntentFilter f=new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);if(Build.VERSION.SDK_INT>=33)registerReceiver(detached,f,Context.RECEIVER_NOT_EXPORTED);else registerReceiver(detached,f);}
  PendingIntent action(int id,String name){return PendingIntent.getService(this,id,new Intent(this,UsbAudioService.class).setAction(name),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);}
  void volumeChanged(){notifications.post(()->{if(mediaVolume!=null)mediaVolume.sync();notifyState();});}
  Notification notification(){
   PendingIntent open=PendingIntent.getActivity(this,0,new Intent(this,MainActivity.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
   PendingIntent stop=PendingIntent.getService(this,1,new Intent(this,UsbAudioService.class).setAction(STOP),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-  Notification.Builder builder=new Notification.Builder(this,"usb-audio").setSmallIcon(android.R.drawable.ic_media_play).setContentTitle("OpenDSP · "+(dopActive?"DSD直送":"USB音量 "+UsbVolume.label())).setContentText(display).setContentIntent(open).setOngoing(true);
+  Notification.Builder builder=new Notification.Builder(this,"usb-audio").setSmallIcon(android.R.drawable.ic_media_play).setContentTitle("OpenDSP · "+(dopActive?"DSD直送":"USB音量 "+UsbVolume.label())).setContentText(display+"  ·  系统输出已静音，音量键调 USB").setContentIntent(open).setOngoing(true);
   if(!dopActive)builder.addAction(new Notification.Action.Builder(null,"音量−",action(52,VOLUME_DOWN)).build()).addAction(new Notification.Action.Builder(null,UsbVolume.state.muted?"取消静音":"静音",action(53,MUTE)).build()).addAction(new Notification.Action.Builder(null,"音量＋",action(54,VOLUME_UP)).build());
   builder.addAction(new Notification.Action.Builder(null,"停止处理",stop).build());
   if(mediaVolume!=null)builder.setStyle(new Notification.MediaStyle().setMediaSession(mediaVolume.session.getSessionToken()).setShowActionsInCompactView(0,1,3));
@@ -68,9 +69,11 @@ public final class UsbAudioService extends Service {
    else startForeground(23,notification());
    latest=Preset.parse(intent.getStringExtra("preset"));deviceName=intent.getStringExtra("device");
    if(!dopActive)mediaVolume=new UsbMediaVolume(this);
+   if(systemGuard!=null)systemGuard.close();
+   systemGuard=new SystemVolumeGuard(this);systemGuard.start();
    wake=getSystemService(PowerManager.class).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"OpenDSP:UsbAudio");wake.setReferenceCounted(false);wake.acquire(6*60*60*1000L);
    running.set(true);worker=new Thread(()->run(intent,startId),"OpenDSP-USB-producer");worker.start();
-  }catch(Exception e){phase="error";stopReason="start_error";display="启动失败："+e.getMessage();if(mediaVolume!=null){mediaVolume.close();mediaVolume=null;}if(wake!=null&&wake.isHeld())wake.release();stopForeground(STOP_FOREGROUND_REMOVE);stopSelf(startId);}
+  }catch(Exception e){phase="error";stopReason="start_error";display="启动失败："+e.getMessage();if(mediaVolume!=null){mediaVolume.close();mediaVolume=null;}if(systemGuard!=null){systemGuard.close();systemGuard=null;}if(wake!=null&&wake.isHeld())wake.release();stopForeground(STOP_FOREGROUND_REMOVE);stopSelf(startId);}
   return START_NOT_STICKY;
  }
  void stopPlayback(){
@@ -200,6 +203,7 @@ public final class UsbAudioService extends Service {
    try{JSONObject closed=new JSONObject(diagnostics);closed.put("stop_reason",stopReason).put("session_closed",true).put("usb_claimed",false).put("running",false).put("phase",phase).put("usb_recoveries",usbRecoveries).put("source_has_signal",false).put("input_rms_dbfs",JSONObject.NULL).put("output_rms_dbfs",JSONObject.NULL);
     if(stopRequestedAtNs>0)closed.put("stop_to_release_ms",(System.nanoTime()-stopRequestedAtNs)/1000000d);
     diagnostics=closed.toString();java.io.File reportFile=new java.io.File(getFilesDir(),"usb-last-report.json");try(FileOutputStream out=new FileOutputStream(reportFile)){out.write(diagnostics.getBytes(java.nio.charset.StandardCharsets.UTF_8));}}catch(Exception ignored){}
+   if(systemGuard!=null){systemGuard.close();systemGuard=null;}
    final Thread ended=Thread.currentThread();new Handler(getMainLooper()).post(()->{if(worker==ended){worker=null;if(mediaVolume!=null){mediaVolume.close();mediaVolume=null;}stopForeground(STOP_FOREGROUND_REMOVE);stopSelf(startId);}});
   }
  }
@@ -209,7 +213,7 @@ public final class UsbAudioService extends Service {
  }
  JSONObject readStatus(long handle,String capabilities)throws Exception{
   if(capabilitySnapshot==null)capabilitySnapshot=new JSONObject(capabilities);
-  return new JSONObject(UsbNative.status(handle)).put("capabilities",capabilitySnapshot).put("phase",phase).put("source_package",activeSourcePackage).put("source_label",activeSourceLabel).put("source_kind",captureSession?"AudioPlaybackCapture":"local");
+  return new JSONObject(UsbNative.status(handle)).put("capabilities",capabilitySnapshot).put("phase",phase).put("source_package",activeSourcePackage).put("source_label",activeSourceLabel).put("source_kind",captureSession?"AudioPlaybackCapture":"local").put("system_output_locked",systemGuard!=null&&systemGuard.active());
  }
  PcmSource openFile(Uri uri)throws IOException{
   if(uri==null)throw new IOException("未选择文件");activeFile=getContentResolver().openInputStream(uri);if(activeFile==null)throw new IOException("无法读取文件");
@@ -240,5 +244,5 @@ public final class UsbAudioService extends Service {
   try(BufferedReader reader=new BufferedReader(new FileReader("/proc/self/cgroup"))){StringBuilder groups=new StringBuilder();String line;while((line=reader.readLine())!=null)groups.append(line).append('\n');d.put("process_cgroup",groups.toString());}catch(IOException ignored){}
   writer.println(d.toString());
  }catch(Exception e){writer.println(diagnostics);}}
- public void onDestroy(){if(running.get()&&stopReason.equals("running"))stopReason="service_destroyed";stopPlayback();if(mediaVolume!=null){mediaVolume.close();mediaVolume=null;}notifications.removeCallbacksAndMessages(null);notificationQueued.set(false);unregisterReceiver(detached);if(instance==this)instance=null;super.onDestroy();}
+ public void onDestroy(){if(running.get()&&stopReason.equals("running"))stopReason="service_destroyed";stopPlayback();if(mediaVolume!=null){mediaVolume.close();mediaVolume=null;}if(systemGuard!=null){systemGuard.close();systemGuard=null;}notifications.removeCallbacksAndMessages(null);notificationQueued.set(false);unregisterReceiver(detached);if(instance==this)instance=null;super.onDestroy();}
 }

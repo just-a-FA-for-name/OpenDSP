@@ -36,6 +36,7 @@ public final class MainActivity extends Activity {
     @Override public void onCreate(Bundle state){super.onCreate(state);
         live=new java.lang.ref.WeakReference<>(this);
         UsbVolume.load(this);
+        SystemVolumeGuard.restoreIfOrphan(this);
         try{preset=loadPreset(getPreferences(0).getString("current",""));}catch(Exception e){preset=Preset.defaults();}
         getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);

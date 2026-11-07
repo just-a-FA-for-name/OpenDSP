@@ -17,10 +17,13 @@ final class UsbMediaVolume implements AutoCloseable {
    public void onSetVolumeTo(int value){UsbVolume.set(service,value,false);}
   };
   session.setCallback(new MediaSession.Callback(){public boolean onMediaButtonEvent(Intent intent){return false;}},new Handler(Looper.getMainLooper()));
-  session.setMediaButtonReceiver((PendingIntent)null);
+  /* Keep this session a first-class media session. Some OEM ROMs ignore a
+     session with no actions / no media-button receiver and fall back to
+     STREAM_MUSIC for the volume keys, which is exactly the double-output bug. */
+  session.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS|MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
   session.setSessionActivity(PendingIntent.getActivity(service,50,new Intent(service,MainActivity.class),PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT));
   session.setPlaybackToRemote(provider);session.setMetadata(new MediaMetadata.Builder().putString(MediaMetadata.METADATA_KEY_TITLE,"OpenDSP USB主音量").build());
-  session.setPlaybackState(new PlaybackState.Builder().setActions(0).setState(PlaybackState.STATE_PLAYING,PlaybackState.PLAYBACK_POSITION_UNKNOWN,1).build());session.setActive(true);
+  session.setPlaybackState(new PlaybackState.Builder().setActions(PlaybackState.ACTION_PLAY_PAUSE|PlaybackState.ACTION_STOP).setState(PlaybackState.STATE_PLAYING,PlaybackState.PLAYBACK_POSITION_UNKNOWN,1).build());session.setActive(true);
  }
  void sync(){provider.setCurrentVolume(UsbVolume.state.muted?0:UsbVolume.state.percent);}
  public void close(){session.setActive(false);session.release();}
